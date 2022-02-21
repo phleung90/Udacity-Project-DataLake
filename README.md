@@ -53,6 +53,19 @@ The data mart schema is star schema, with `songplays` as a fact table and `users
   - start_time, hour, day, week, month, year, weekday<br />
 
 
+## Spark process 
+To create the dimension table, the process is as follows: 
+
+1. Create a spark session 
+2. Read the json file from S3 to spark dataframe
+3. Select the data in spark dataframe and form the fact and dimension tables
+4. Write the outfile df into a parquet file and upload to s3
+
+## Files incurred 
+`etl.py` - The main script<br /> 
+`dl.cfg` - The access config to AWS 
+
+
 
 
 
