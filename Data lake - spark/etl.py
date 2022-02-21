@@ -29,17 +29,17 @@ def process_song_data(spark, input_data, output_data):
     df = spark.read.json(song_data)
 
     # extract columns to create songs table
-    songs_table = df.select(['song_id', 'title', 'artist_id', 'year', 'duration'])
+    songs_table = df.select(['song_id', 'title', 'artist_id', 'year', 'duration']).dropDuplicates()
     
     # write songs table to parquet files partitioned by year and artist
     songs_table.write.partitionBy("year", "artist_id").mode('overwrite').parquet(os.path.join('s3a://udacity-dend-data-output/', 'songs'))
 
     # extract columns to create artists table
-    artists_table = df.select(['artist_id', 'artist_name', 'artist_location', 'artist_latitude', 'artist_longitude'])
+    artists_table = df.select(['artist_id', 'artist_name', 'artist_location', 'artist_latitude', 'artist_longitude']).dropDuplicates()
 
     
     # write artists table to parquet files
-    artists_table.write.mode('overwrite').parquet(os.path.join('s3a://udacity-dend-data-output/', 'artists'))
+    artists_table.write.mode('overwrite').parquet(os.path.join('s3a://udacity-dend-data-output/', 'artists')).dropDuplicates()
 
 
 def process_log_data(spark, input_data, output_data):
@@ -53,7 +53,7 @@ def process_log_data(spark, input_data, output_data):
     df = df.filter(df.page == 'NextSong')
 
     # extract columns for users table    
-    user_table = df.select(['userId', 'firstName', 'lastName', 'gender', 'level'])
+    user_table = df.select(['userId', 'firstName', 'lastName', 'gender', 'level']).dropDuplicates()
     
     # write users table to parquet files
     user_table.write.mode('overwrite').parquet(os.path.join('s3a://udacity-dend-data-output/', 'users'))
@@ -99,7 +99,7 @@ def process_log_data(spark, input_data, output_data):
             col("useragent").alias("user_agent"),
             year('datetime').alias('year'),
             month('datetime').alias('month')
-    )
+    ).dropDuplicates()
 
     # write songplays table to parquet files partitioned by year and month
     songplays_table.write.mode("overwrite").partitionBy("year", "month").parquet(output_data + 'songplays/')
